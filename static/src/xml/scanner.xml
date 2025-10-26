@@ -1,0 +1,14 @@
+<templates>
+    <t t-name="kesiyos_scanner">
+        <div class="container-fluid p-4">
+            <h1>Production Scanner</h1>
+            <input type="text" 
+                   id="barcode_scan" 
+                   class="form-control form-control-lg"
+                   placeholder="Scan barcode here..."
+                   style="font-size: 24px; height: 60px;"
+                   autofocus="autofocus"/>
+            <div id="result" class="mt-3"></div>
+        </div>
+    </t>
+</templates>

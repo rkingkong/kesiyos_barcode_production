@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_bom_structure_barcode" inherit_id="mrp.report_bom_structure">
+        <xpath expr="//div[@class='page']" position="before">
+            <div class="text-center" style="page-break-after: always;">
+                <h2>PRODUCTION SHEET</h2>
+                <h3><span t-field="o.product_id.name"/></h3>
+                <h4>Scan to Produce 1 Batch</h4>
+                <div t-if="o.production_barcode">
+                    <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.production_barcode, 600, 150)"/>
+                    <p><span t-field="o.production_barcode"/></p>
+                </div>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Ingredient</th>
+                            <th>1 Batch</th>
+                            <th>2 Batch</th>
+                            <th>3 Batch</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.bom_line_ids" t-as="line">
+                            <td><span t-field="line.product_id.name"/></td>
+                            <td><span t-field="line.product_qty"/> <span t-field="line.product_uom_id.name"/></td>
+                            <td><span t-esc="line.product_qty * 2"/> <span t-field="line.product_uom_id.name"/></td>
+                            <td><span t-esc="line.product_qty * 3"/> <span t-field="line.product_uom_id.name"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </xpath>
+    </template>
+</odoo>

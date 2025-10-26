@@ -1,0 +1,30 @@
+<template id="barcode_scanner_page" name="Production Scanner">
+    <t t-call="web.layout">
+        <div class="container mt-5">
+            <h1>Scan Production Barcode</h1>
+            <input type="text" 
+                   id="barcode_input" 
+                   class="form-control"
+                   placeholder="Scan barcode here..."
+                   autofocus="autofocus"/>
+            <div id="result" class="mt-3"></div>
+        </div>
+        
+        <script>
+            document.getElementById('barcode_input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    var barcode = this.value;
+                    // Call the production function
+                    odoo.rpc.query({
+                        model: 'stock.picking',
+                        method: 'process_barcode_production',
+                        args: [barcode]
+                    }).then(function(result) {
+                        document.getElementById('result').innerHTML = result.message;
+                        document.getElementById('barcode_input').value = '';
+                    });
+                }
+            });
+        </script>
+    </t>
+</template>

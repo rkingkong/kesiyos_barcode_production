@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Scanner Form -->
+    <record id="view_barcode_production_scanner" model="ir.ui.view">
+        <field name="name">barcode.production.scanner.form</field>
+        <field name="model">barcode.production.scanner</field>
+        <field name="arch" type="xml">
+            <form string="Scan to Produce">
+                <group>
+                    <field name="barcode" placeholder="Scan barcode here..." class="oe_inline" widget="barcode_handler"/>
+                </group>
+                <footer>
+                    <button string="Close" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Menu Action -->
+    <record id="action_barcode_production_scan" model="ir.actions.act_window">
+        <field name="name">Scan Production</field>
+        <field name="res_model">barcode.production.scanner</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_barcode_production_scan"
+              name="📷 Scan to Produce"
+              parent="mrp.menu_mrp_manufacturing"
+              action="action_barcode_production_scan"
+              sequence="1"/>
+</odoo>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_server_produce_batch" model="ir.actions.server">
+        <field name="name">Produce Batch from Barcode</field>
+        <field name="model_id" ref="mrp.model_mrp_production"/>
+        <field name="state">code</field>
+        <field name="code">
+# This runs when barcode is scanned
+barcode = env.context.get('barcode', False)
+if barcode:
+    bom = env['mrp.bom'].search([('production_barcode', '=', barcode)], limit=1)
+    if bom:
+        # Create production
+        production = env['mrp.production'].create({
+            'product_id': bom.product_id.id,
+            'bom_id': bom.id,
+            'product_qty': 1.0,
+        })
+        production.action_confirm()
+        
+        # Auto-consume materials
+        for move in production.move_raw_ids:
+            move.quantity_done = move.product_uom_qty
+        
+        # Complete production
+        production.button_mark_done()
+        
+        # Show success
+        action = {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'message': f'✓ Produced 1 batch of {bom.product_id.name}',
+                'type': 'success',
+            }
+        }
+        </field>
+    </record>
+</odoo>
