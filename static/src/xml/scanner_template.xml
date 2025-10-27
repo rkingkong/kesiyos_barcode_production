@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="kesiyos_barcode_scanner">
+        <div class="o_barcode_scanner p-5">
+            <h1>Scan Production Barcode</h1>
+            <input type="text" class="form-control form-control-lg" 
+                   placeholder="Scan or type barcode..." 
+                   style="font-size: 24px;"/>
+            <div class="mt-3 text-muted">
+                Scan recipe barcode to complete 1 batch production
+            </div>
+        </div>
+    </t>
+</templates>

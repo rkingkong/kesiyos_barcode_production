@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_bom_barcode_custom" inherit_id="mrp.report_bom_structure">
+        <xpath expr="//div[@class='page']" position="before">
+            <div class="page">
+                <h2 class="text-center">PRODUCTION SHEET</h2>
+                <h3 class="text-center"><t t-esc="data['product'].display_name"/></h3>
+                
+                <t t-if="data.get('bom_id')">
+                    <t t-set="bom_record" t-value="env['mrp.bom'].browse(data['bom_id'])"/>
+                    <t t-if="bom_record.production_barcode">
+                        <div class="text-center mb-4">
+                            <h4>SCAN TO PRODUCE 1 BATCH</h4>
+                            <img t-attf-src="/report/barcode/Code128/{{bom_record.production_barcode}}?width=400&amp;height=120&amp;humanreadable=1"/>
+                            <p class="mt-2"><strong><t t-esc="bom_record.production_barcode"/></strong></p>
+                        </div>
+                    </t>
+                </t>
+                
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="bg-light">
+                            <th>Ingredient</th>
+                            <th class="text-center">1 Batch</th>
+                            <th class="text-center">2 Batch</th>
+                            <th class="text-center">3 Batch</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-if="data.get('components')">
+                            <tr t-foreach="data['components']" t-as="comp">
+                                <td><t t-esc="comp['prod_name']"/></td>
+                                <td class="text-center">
+                                    <t t-esc="comp['prod_qty']"/> <t t-esc="comp['prod_uom']"/>
+                                </td>
+                                <td class="text-center">
+                                    <t t-esc="comp['prod_qty'] * 2"/> <t t-esc="comp['prod_uom']"/>
+                                </td>
+                                <td class="text-center">
+                                    <t t-esc="comp['prod_qty'] * 3"/> <t t-esc="comp['prod_uom']"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+                
+                <div class="row mt-4">
+                    <div class="col-6">
+                        <p><strong>Yield:</strong> <t t-esc="data.get('bom_qty', 1)"/> <t t-esc="data.get('bom_prod_name', '')"/></p>
+                        <p><strong>Shelf Life:</strong> 7 days refrigerated</p>
+                    </div>
+                    <div class="col-6">
+                        <p><strong>Date: _____________</strong></p>
+                        <p><strong>Prepared by: _____________</strong></p>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

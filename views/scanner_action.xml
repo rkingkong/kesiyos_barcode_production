@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_barcode_scanner" model="ir.actions.client">
+        <field name="name">Barcode Scanner</field>
+        <field name="tag">kesiyos_scanner</field>
+    </record>
+    
+    <menuitem id="menu_barcode_scanner"
+              name="📷 Scan to Produce"
+              parent="mrp.menu_mrp_manufacturing"
+              action="action_barcode_scanner"
+              sequence="1"/>
+</odoo>

@@ -1,6 +1,5 @@
 from odoo import models, fields, api
-import random
-import string
+from odoo.exceptions import UserError
 
 class MrpBom(models.Model):
     _inherit = 'mrp.bom'
@@ -9,49 +8,44 @@ class MrpBom(models.Model):
         string='Production Barcode',
         help='Scan this to produce 1 batch'
     )
-    
     @api.model
-    def create(self, vals):
-        # Auto-generate barcode if not provided
-        if 'production_barcode' not in vals or not vals['production_barcode']:
-            # Generate unique code like "PROD-ABC123"
-            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-            vals['production_barcode'] = f"PROD-{code}"
-        return super().create(vals)
+def create(self, vals):
+    if not vals.get('production_barcode'):
+        # Generate based on product name
+        product_name = vals.get('code', 'BATCH')
+        clean_name = ''.join(c for c in product_name if c.isalnum())[:4].upper()
+        sequence = self.search_count([]) + 1
+        vals['production_barcode'] = f"{clean_name}-{sequence:03d}"
+    return super().create(vals)
 
-class MrpProduction(models.Model):
-    _inherit = 'mrp.production'
-    
+
     @api.model
-    def create_production_from_barcode(self, barcode):
-        """Create and complete production from barcode scan"""
-        bom = self.env['mrp.bom'].search([
-            ('production_barcode', '=', barcode)
-        ], limit=1)
+    def process_production_barcode(self, barcode):
+        """Process barcode scan and create production"""
+        bom = self.search([('production_barcode', '=', barcode)], limit=1)
         
         if not bom:
-            return {'error': 'No BOM found for this barcode'}
+            return {'success': False, 'message': f'No BOM found for barcode: {barcode}'}
         
         # Create production order
-        production = self.create({
+        production = self.env['mrp.production'].create({
             'product_id': bom.product_id.id,
             'bom_id': bom.id,
             'product_qty': 1.0,
             'product_uom_id': bom.product_uom_id.id,
         })
         
-        # Confirm production
+        # Confirm and complete
         production.action_confirm()
         
-        # Set consumed quantities
+        # Auto-consume materials
         for move in production.move_raw_ids:
             move.quantity_done = move.product_uom_qty
         
-        # Complete production
+        # Mark as done
         production.button_mark_done()
         
         return {
             'success': True,
-            'production_id': production.id,
-            'message': f'Produced 1 batch of {bom.product_id.name}'
+            'message': f'✓ Produced 1 batch of {bom.product_id.name}'
         }
