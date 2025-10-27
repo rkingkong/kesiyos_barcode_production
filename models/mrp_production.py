@@ -1,6 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 
+
 class MrpBom(models.Model):
     _inherit = 'mrp.bom'
     
@@ -8,16 +9,16 @@ class MrpBom(models.Model):
         string='Production Barcode',
         help='Scan this to produce 1 batch'
     )
+    
     @api.model
-def create(self, vals):
-    if not vals.get('production_barcode'):
-        # Generate based on product name
-        product_name = vals.get('code', 'BATCH')
-        clean_name = ''.join(c for c in product_name if c.isalnum())[:4].upper()
-        sequence = self.search_count([]) + 1
-        vals['production_barcode'] = f"{clean_name}-{sequence:03d}"
-    return super().create(vals)
-
+    def create(self, vals):
+        """Auto-generate barcode if not provided"""
+        if not vals.get('production_barcode'):
+            product_name = vals.get('code', 'BATCH')
+            clean_name = ''.join(c for c in product_name if c.isalnum())[:4].upper()
+            sequence = self.search_count([]) + 1
+            vals['production_barcode'] = f"{clean_name}-{sequence:03d}"
+        return super().create(vals)
 
     @api.model
     def process_production_barcode(self, barcode):

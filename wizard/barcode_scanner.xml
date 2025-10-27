@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <form string="Scan to Produce">
                 <group>
-                    <field name="barcode" placeholder="Scan barcode here..." class="oe_inline" widget="barcode_handler"/>
+                    <field name="barcode" placeholder="Scan barcode here..." widget="barcode_handler"/>
                 </group>
                 <footer>
                     <button string="Close" special="cancel" class="btn-secondary"/>
